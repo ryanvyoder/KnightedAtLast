@@ -1,0 +1,87 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset = "utf-8"/>
+    <title>Knighted At Last</title>
+    <style>
+      *{padding: 0; margin: 0}
+      canvas {background: #eee; display: block; margin: 0 auto;}
+    </style>
+  </head>
+  <body>
+    <!-- render the game here -->
+    <canvas id = "theCanvas" width = "1920" height = "1080"></canvas>
+    <!-- Code for the game here -->
+    <script>
+      var canvas = document.getElementById("theCanvas"); //the canvas object we paint on
+      var context = canvas.getContext("2d"); //the actual tool we use to paint on the canvas
+
+      // Handling keypresses (controlling our character)
+      document.addEventListener("keydown", keyDownHandler, false);
+      document.addEventListener("keyup", keyUpHandler, false);
+
+      var leftPressed = false;
+      var rightPressed = false;
+      var knightx = 100;
+      var knighty = 100;
+      var knightdx = 0;
+      var knightdy = 0;
+      var audio = new Audio('placeholder.wav');
+      audio.loop = true;
+      audio.play();
+
+      /*
+        keyDownHandler()
+        Called every update if a key has been pressed down
+       */
+      function keyDownHandler(e){
+        if(e.keyCode == 37){ // Left arrow key
+          leftPressed = true;
+        }
+        else if (e.keyCode == 39){ // Right arrow key
+          rightPressed = true;
+        }
+      }
+
+      /*
+        keyUpHandler()
+        Called every update if a key is now not pressed down
+       */
+      function keyUpHandler(e){
+        if(e.keyCode == 37){ // Left arrow key
+          leftPressed = false;
+        }
+        else if(e.keyCode == 39){ // Right arrow key
+          rightPressed = false;
+        }
+      }
+
+      function draw(){
+        // Drawing code
+        clearCanvas();
+        // Temporary sprite draw for testing
+        var knightImage = new Image();
+        knightImage.src = "knight2.png";
+        if(leftPressed){
+          knightdx = -1;
+        }
+        else if(rightPressed){
+          knightdx = 1;
+        }
+        else{
+          knightdx = 0;
+        }
+
+        knightx = knightx + 5*knightdx;
+
+        context.drawImage(knightImage, 0, 0, knightImage.width, knightImage.height, knightx, knighty, knightImage.width/2, knightImage.height/2)
+      }
+      setInterval(draw, 10); //function will be called every <second param> milliseconds
+
+      function clearCanvas(){
+        context.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    </script>
+
+  </body>
+</html>
