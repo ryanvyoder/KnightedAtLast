@@ -10,22 +10,28 @@
   </head>
   <body>
     <!-- render the game here -->
-    <canvas id = "theCanvas" width = "1920" height = "1080"></canvas>
+    <canvas id = "theCanvas" width = "100%" height = "100%"></canvas>
     <!-- Code for the game here -->
     <script>
-      var canvas = document.getElementById("theCanvas"); //the canvas object we paint on
-      var context = canvas.getContext("2d"); //the actual tool we use to paint on the canvas
+      var canvas = document.getElementById("theCanvas");  // the canvas object we paint on
+      // !!!!!!!! Update this in the future such that if the user resizes the window, the canvas does as well.
+      canvas.width = window.innerWidth;                   // set the canvas width to that of the display
+      canvas.height = window.innerHeight;                 // set the canvas height to that of the display
+      var context = canvas.getContext("2d");              // the actual tool we use to paint on the canvas
 
       // Handling keypresses (controlling our character)
       document.addEventListener("keydown", keyDownHandler, false);
       document.addEventListener("keyup", keyUpHandler, false);
 
-      var leftPressed = false;
-      var rightPressed = false;
+      var leftPressed = false, rightPressed = false, upPressed = false, downPressed = false;
       var knightx = 100;
       var knighty = 100;
       var knightdx = 0;
       var knightdy = 0;
+      var numFrame = 0;
+      playerFrame = false;
+      playerLeft = false;
+      var knightSource = "knights.png";
       var audio = new Audio('placeholder.wav');
       audio.loop = true;
       audio.play();
@@ -38,8 +44,14 @@
         if(e.keyCode == 37){ // Left arrow key
           leftPressed = true;
         }
-        else if (e.keyCode == 39){ // Right arrow key
+        else if(e.keyCode == 38){ // Up arrow key
+          upPressed = true;
+        }
+        else if(e.keyCode == 39){ // Right arrow key
           rightPressed = true;
+        }
+        else if(e.keyCode == 40){ // Down arrow key
+          downPressed = true;
         }
       }
 
@@ -51,30 +63,46 @@
         if(e.keyCode == 37){ // Left arrow key
           leftPressed = false;
         }
+        else if(e.keyCode == 38){ // Up arrow key
+          upPressed = false;
+        }
         else if(e.keyCode == 39){ // Right arrow key
           rightPressed = false;
+        }
+        else if(e.keyCode == 40){ // Down arrow key
+          downPressed = false;
         }
       }
 
       function draw(){
+        numFrame ++;
         // Drawing code
         clearCanvas();
         // Temporary sprite draw for testing
-        var knightImage = new Image();
-        knightImage.src = "knight2.png";
         if(leftPressed){
+          knightSource = "knights_2.png"
           knightdx = -1;
         }
         else if(rightPressed){
           knightdx = 1;
+          knightSource = "knights.png"
         }
         else{
           knightdx = 0;
         }
-
+        var knightImage = new Image();
+        knightImage.src = knightSource;
         knightx = knightx + 5*knightdx;
-
-        context.drawImage(knightImage, 0, 0, knightImage.width, knightImage.height, knightx, knighty, knightImage.width/2, knightImage.height/2)
+        if(numFrame % 50 == 0){
+          playerFrame = !playerFrame;
+        }
+      //  context.drawImage(knightImage, 0, 0, knightImage.width/2, knightImage.height, knightx, knighty, knightImage.width/2, knightImage.height/2);
+        if(playerFrame){
+          context.drawImage(knightImage, knightImage.width/2 + 10, 0, knightImage.width, knightImage.height, knightx, knighty, knightImage.width, knightImage.height);
+        }
+        else{
+          context.drawImage(knightImage, 0, 0, knightImage.width/2 - 10, knightImage.height, knightx, knighty, knightImage.width/2 - 10, knightImage.height);
+        }
       }
       setInterval(draw, 10); //function will be called every <second param> milliseconds
 
