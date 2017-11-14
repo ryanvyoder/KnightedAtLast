@@ -33,6 +33,7 @@
     <script src = "Sprite.js"></script>
     <script src="GameObject.js"></script>
     <script src="Player.js"></script>
+    <script src = "Enemy.js"></script>
 
     <script>
       // Handling keypresses (controlling our character)
@@ -40,10 +41,15 @@
       document.addEventListener("keyup", keyUpHandler, false);
 
       var knight = new Player(100, canvas.height-250, 220, 400);
+      var enemy1 = new Enemy(200, knight.getY() + (knight.getHeight()*knight.getScale() - 75), 75, 75, "hop");
+      var enemy2 = new Enemy(200, knight.getY() + (knight.getHeight()*knight.getScale() - 75), 75, 75, "slide");
       activeObjects.push(knight);
+      activeObjects.push(enemy1);
+      activeObjects.push(enemy2);
       var audio = new Audio('placeholder.wav');
       audio.loop = true;
       audio.play();
+      var player = knight;
 
       /*
         keyDownHandler()
@@ -83,6 +89,10 @@
         }
       }
 
+      /*
+        draw()
+        Called every update. Clears the canvas and then redraws the next frame.
+       */
       function draw(){
         // Drawing code
         clearCanvas();
@@ -93,6 +103,10 @@
       }
       setInterval(draw, 10); //function will be called every <second param> milliseconds
 
+      /*
+        clearCanvas()
+        Clears the context's canvas
+       */
       function clearCanvas(){
         context.clearRect(0, 0, canvas.width, canvas.height);
       }
