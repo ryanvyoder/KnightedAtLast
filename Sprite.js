@@ -88,7 +88,7 @@ function Sprite(file, x, y, width, height){
     draw()
     draws the sprite onto the canvas
    */
-  this.draw = function(locx, locy, scale){
-    context.drawImage(this.image, this.x, this.y, this.width, this.height, locx, locy, this.width*scale, this.height *scale);
+  this.draw = function(locx, locy, scaledWidth, scaledHeight){
+    context.drawImage(this.image, this.x, this.y, this.width, this.height, locx, locy, scaledWidth, scaledHeight);
   }
 }

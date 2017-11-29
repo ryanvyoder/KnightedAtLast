@@ -8,6 +8,7 @@ function GameObject(x, y, width, height){
   this.width = width;
   this.height = height;
   this.enemy = 0;
+  this.hitboxes = [];
 
   this.getX = function(){
     return this.x;
@@ -25,9 +26,29 @@ function GameObject(x, y, width, height){
     return this.height;
   };
 
+  this.addHitbox = function(r){
+    this.hitboxes.push(r);
+  };
+
+  this.getHitboxes = function(){
+    return this.hitboxes;
+  }
+
+  this.clearHitboxes = function(){
+    this.hitboxes = [];
+  }
+
   this.collides = function(obj2){
-    if ((this.x <= (obj2.getX()+obj2.getWidth())) || (this.x + this.width >= obj2.getX())){ //if the left side of this is before the right side of... HOLD ON THIS NEEDS FIXED
-      return true;
+    // For every rectangle in this object, check if any of them collide with the rectangles of
+    // obj2
+    if(this.hitboxes && this.hitboxes.length && obj2.getHitboxes() && obj2.getHitboxes().length){
+      for(index = 0; index < this.hitboxes.length; index++){
+        for(index2 = 0; index2 < obj2.getHitboxes().length; index2++){
+          if(this.hitboxes[index].collides(obj2.getHitboxes()[index2])){
+            return true;
+          }
+        }
+      }
     }
     return false;
   };

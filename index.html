@@ -28,8 +28,11 @@
       var context = canvas.getContext("2d");              // the actual tool we use to paint on the canvas
       var leftPressed = false, rightPressed = false, upPressed = false, downPressed = false;
       var activeObjects = [];
+      var enemies = [];
+      var hitboxView = 0;
     </script>
 
+    <script src = "Rectangle.js"></script>
     <script src = "Sprite.js"></script>
     <script src="GameObject.js"></script>
     <script src="Player.js"></script>
@@ -41,11 +44,13 @@
       document.addEventListener("keyup", keyUpHandler, false);
 
       var knight = new Player(100, canvas.height-250, 220, 400);
-      var enemy1 = new Enemy(200, knight.getY() + (knight.getHeight()*knight.getScale() - 75), 75, 75, "hop");
-      var enemy2 = new Enemy(200, knight.getY() + (knight.getHeight()*knight.getScale() - 75), 75, 75, "slide");
+      var enemy1 = new Enemy(700, knight.getY() + (knight.getHeight() - 50), 50, 50, "hop");
+      var enemy2 = new Enemy(700, knight.getY() + (knight.getHeight() - 50), 50, 50, "slide");
       activeObjects.push(knight);
       activeObjects.push(enemy1);
       activeObjects.push(enemy2);
+      enemies.push(enemy1);
+      enemies.push(enemy2);
       var audio = new Audio('placeholder.wav');
       audio.loop = true;
       audio.play();
@@ -96,6 +101,41 @@
       function draw(){
         // Drawing code
         clearCanvas();
+
+        // Kill an enemy if it touches you
+
+        // NOTE:
+        // VERY weird thing here. When I use a for loop, it does NOT always execute the full loop.
+        // Sometimes it only executes the first iteration and then moves on! I'm not sure if this is something
+        // with setInterval where perhaps it estimates how much time it has and skips if it has to, but
+        // it forced me to use this little while loop instead. Interested to know what's going on here.
+
+        //for(index = 0; index < enemies.length; index++){
+        cnt = 0;
+        while(cnt < enemies.length){
+          if(player.collides(enemies[cnt])){
+            enemies[cnt].kill();
+          }
+          cnt++;
+        }
+
+
+        for(index = 0; index < enemies.length; index++){
+          console.log("Checking alive enmy: " + index);
+          if(!enemies[index].isAlive()){
+            theIndex = 0;
+            for(q = 0; q < activeObjects.length; q++){
+              if(activeObjects[q] == enemies[index]){
+                theIndex = q;
+                break;
+              }
+            }
+            //theIndex = activeObjects.findIndex(enemies[index]);
+            activeObjects.splice(theIndex, 1);
+            enemies.splice(index, 1);
+          }
+        }
+
         for(index = 0; index < activeObjects.length; index++){
           activeObjects[index].update();
           activeObjects[index].draw();

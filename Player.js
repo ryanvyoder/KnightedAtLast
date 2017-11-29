@@ -4,8 +4,8 @@
   have it always cycle through the frames. Perhaps have the sprite classes also hold a frame rate value?
  */
 function Player(x, y, width, height){
-  GameObject.call(this, x, y, width, height);
   this.scale = 1/4; // Scale factor for sprites
+  GameObject.call(this, x, y, width*this.scale, height*this.scale);
   this.dx = 0;  // x velocity
   this.dy = 0;  // y velocity
   this.numFrame = 0; // Used to slow down frame rate for animations
@@ -23,16 +23,16 @@ function Player(x, y, width, height){
   this.turnCount = 0; // Used for tracking frames in turn animations
 
   // Creating idle animation links
-  this.startSprites[0] = new Sprite(this.playerSource, 0, 0, this.width, this.height);
+  this.startSprites[0] = new Sprite(this.playerSource, 0, 0, width, height);
   this.startSprites[0].createSet(3, 0, 0);
   // Creating left turn animation links
-  this.startSprites[1] = new Sprite(this.playerSource, this.width, this.height, this.width, this.height);
-  this.startSprites[1].createSet(2, this.width, this.height);
+  this.startSprites[1] = new Sprite(this.playerSource, width, height, width, height);
+  this.startSprites[1].createSet(2, width, height);
   // Creating right turn animation links
-  this.startSprites[2] = new Sprite(this.playerSource, (this.width*3), 0, this.width, this.height);
-  this.startSprites[2].createSet(2, (this.width*3), 0);
+  this.startSprites[2] = new Sprite(this.playerSource, (width*3), 0, width, height);
+  this.startSprites[2].createSet(2, (width*3), 0);
 
-    this.currentSprite = this.startSprites[0]; // Start with the idle animation
+  this.currentSprite = this.startSprites[0]; // Start with the idle animation
 
   this.changeSpriteSheet = function(file){
     this.playerSource = file;
@@ -41,6 +41,12 @@ function Player(x, y, width, height){
   this.getScale = function(){
     return this.scale;
   };
+
+  this.makeHitboxes = function(){
+    this.clearHitboxes();
+    //hitbox = new Rectangle(this.x, this.y, this.width, this.height);
+    this.addHitbox(new Rectangle(this.x, this.y, this.width, this.height));
+  }
 
   /*
   @Override
@@ -142,6 +148,8 @@ function Player(x, y, width, height){
     this.x = this.x + 2*this.dx;
     this.y = this.y + 2*this.dy;
 
+    this.makeHitboxes();
+
     // Animate the player when idle
     if(this.numFrame % 5 == 0){ //This is mainly so the animation returns quickly after a turn
       if(this.turnCount == 0){
@@ -187,7 +195,14 @@ function Player(x, y, width, height){
     playerImage.src = this.playerSource;
 
     // Draw player onto the canvas
-    this.currentSprite.draw(this.x, this.y, this.scale);
-  }
+    this.currentSprite.draw(this.x, this.y, this.width, this.height);
+
+    if(hitboxView == 1){
+      context.beginPath();
+      context.fillStyle = "blue";
+      context.rect(this.x, this.y, this.width, this.height);
+      context.fill();
+    }
+  };
 }
 Player.prototype = Object.create(GameObject.prototype);

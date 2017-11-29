@@ -12,6 +12,16 @@ function Enemy(x, y, width, height, moveMethod){
   this.function = moveMethod;
   this.hopCount = 0;
   this.timeWaited = 0;
+  this.alive = 1;
+
+  this.isAlive = function(){
+    return this.alive;
+  }
+
+  this.kill = function(){
+    this.alive = 0;
+    this.hitboxes = [];
+  }
 
   this.update = function(){
 
@@ -87,6 +97,13 @@ function Enemy(x, y, width, height, moveMethod){
 
     this.x += this.dx;
     this.y += this.dy;
+    this.makeHitboxes();
+  }
+
+  this.makeHitboxes = function(){
+    this.clearHitboxes();
+    //hitbox = new Rectangle(this.x, this.y, this.width, this.height);
+    this.addHitbox(new Rectangle(this.x, this.y, this.width, this.height));
   }
 
   this.draw = function(){
