@@ -21,7 +21,7 @@ function Sprite(file, x, y, width, height){
     This is set to true if this sprite is the first sprite frame for the current set
    */
   this.setStart = function(){
-    this.startSprites = true;
+    this.startSprite = true;
   };
 
   /*
@@ -52,6 +52,8 @@ function Sprite(file, x, y, width, height){
     currx = startx;
     curry = starty;
     for(i = 0; i < numFrames-1; i++){
+      //currSpr.x = currx;
+      //currSpr.y = curry;
       if(this.image.width <= currx+this.width){
         currx = 0;
         curry += this.height;

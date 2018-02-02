@@ -26,16 +26,21 @@
       canvas.width = window.innerWidth;                   // set the canvas width to that of the display
       canvas.height = window.innerHeight;                 // set the canvas height to that of the display
       var context = canvas.getContext("2d");              // the actual tool we use to paint on the canvas
-      var leftPressed = false, rightPressed = false, upPressed = false, downPressed = false;
+      var leftPressed = false, rightPressed = false, upPressed = false, downPressed = false, spacePressed = false;
       var activeObjects = [];
       var enemies = [];
-      var hitboxView = 0;
+      var platforms = [];
+      var hitboxView = 1;
+      var identity = 0;
+      var groundLevel = canvas.height-250;
+      //var playerOnAPlatform = false;
     </script>
 
     <script src = "Rectangle.js"></script>
     <script src = "Sprite.js"></script>
     <script src="GameObject.js"></script>
     <script src="Player.js"></script>
+    <script src="Platform.js"></script>
     <script src = "Enemy.js"></script>
 
     <script>
@@ -43,12 +48,18 @@
       document.addEventListener("keydown", keyDownHandler, false);
       document.addEventListener("keyup", keyUpHandler, false);
 
-      var knight = new Player(100, canvas.height-250, 220, 400);
-      var enemy1 = new Enemy(700, knight.getY() + (knight.getHeight() - 50), 50, 50, "hop");
+      var knight = new Player(100, groundLevel - 100, 220, 400);
+      var ground = new Platform(0, groundLevel, canvas.width, canvas.height - groundLevel);
+      var platform1 = new Platform(300, groundLevel - 100, 100, 10);
+      var enemy1 = new Enemy(700, knight.getY() + (knight.getHeight() - 30), 30, 30, "hop");
       var enemy2 = new Enemy(700, knight.getY() + (knight.getHeight() - 50), 50, 50, "slide");
       activeObjects.push(knight);
+      activeObjects.push(ground);
+      activeObjects.push(platform1);
       activeObjects.push(enemy1);
       activeObjects.push(enemy2);
+      platforms.push(ground);
+      platforms.push(platform1);
       enemies.push(enemy1);
       enemies.push(enemy2);
       var audio = new Audio('placeholder.wav');
@@ -73,6 +84,9 @@
         else if(e.keyCode == 40){ // Down arrow key
           downPressed = true;
         }
+        else if(e.keyCode == 32){ // Space Bar
+          spacePressed = true;
+        }
       }
 
       /*
@@ -92,6 +106,9 @@
         else if(e.keyCode == 40){ // Down arrow key
           downPressed = false;
         }
+        else if(e.keyCode == 32){ // Space Bar
+          spacePressed = false;
+        }
       }
 
       /*
@@ -101,6 +118,8 @@
       function draw(){
         // Drawing code
         clearCanvas();
+        context.fillStyle = "#ffcc00";
+        context.fillRect(0, 0, canvas.width, canvas.height);
 
         // Kill an enemy if it touches you
 
@@ -120,8 +139,8 @@
         }
 
 
+        // Checking if any enemies collide with the player
         for(index = 0; index < enemies.length; index++){
-          console.log("Checking alive enmy: " + index);
           if(!enemies[index].isAlive()){
             theIndex = 0;
             for(q = 0; q < activeObjects.length; q++){
@@ -130,17 +149,35 @@
                 break;
               }
             }
-            //theIndex = activeObjects.findIndex(enemies[index]);
             activeObjects.splice(theIndex, 1);
             enemies.splice(index, 1);
+
+            // Create a new enemy at a random location
+            // Math.random() returns a random value between 0 and 1
+            randomLocation = Math.random();
+            randomLocation = (randomLocation * (canvas.width - 0)) + 0;
+            randomMovement = Math.random();
+            randomEnemySize = 30;
+            if(randomMovement < .5){
+              randomMovement = "hop";
+            }
+            else{
+              randomMovement = "slide";
+              randomEnemySize = 50;
+            }
+            var newEnemy = new Enemy(randomLocation, groundLevel - randomEnemySize, randomEnemySize, randomEnemySize, randomMovement);
+            activeObjects.push(newEnemy);
+            enemies.push(newEnemy)
           }
         }
 
+        // Updating and Drawing everything to the screen
         for(index = 0; index < activeObjects.length; index++){
           activeObjects[index].update();
           activeObjects[index].draw();
         }
       }
+      
       setInterval(draw, 10); //function will be called every <second param> milliseconds
 
       /*

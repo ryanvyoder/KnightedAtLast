@@ -8,7 +8,7 @@ function Enemy(x, y, width, height, moveMethod){
   GameObject.call(this, x, y, width, height);
   this.dx = 0;
   this.dy = 0;
-  this.enemy = 1;
+  //this.enemy = 1;
   this.function = moveMethod;
   this.hopCount = 0;
   this.timeWaited = 0;
