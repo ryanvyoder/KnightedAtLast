@@ -23,20 +23,20 @@ function Platform(x, y, width, height){
 
   this.update = function(){
     this.makeHitboxes();
-    //if(knight.standOn(this)){
-    //  playerOnAPlatform = true; // Global variable from index.html indicating player's status.
-    //}
   };
 
   this.draw = function(){
     context.beginPath();
+    if(hitboxView == 0){
+      this.setToDefaultColor();
+    }
     context.fillStyle = this.useColor;
     context.rect(this.x, this.y, width, height);
     context.fill();
   };
 
   this.toString = function(){
-    console.log(this.ident)
+    console.log(this.ident);
   }
 }
 Platform.prototype = Object.create(GameObject.prototype);

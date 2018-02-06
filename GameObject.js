@@ -34,6 +34,19 @@ function GameObject(x, y, width, height){
     return this.hitboxes;
   };
 
+  this.getHighestHitbox = function(){
+    // Same weird issue with for loops here (game will just crash and slow down my computer if I use a for loop)
+    var highest = new Rectangle(canvas.width, canvas.height, 0, 0);
+    cnt = 0;
+    while(cnt < this.hitboxes.length){
+      if(this.hitboxes[cnt].getHighSide() < highest.getHighSide()){
+        highest = this.hitboxes[cnt];
+      }
+      cnt++;
+    }
+    return highest;
+  };
+
   this.getLowestHitbox = function(){
     // Same weird issue with for loops here (game will just crash and slow down my computer if I use a for loop)
     var lowest = new Rectangle(0, 0, 0, 0);

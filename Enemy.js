@@ -8,7 +8,6 @@ function Enemy(x, y, width, height, moveMethod){
   GameObject.call(this, x, y, width, height);
   this.dx = 0;
   this.dy = 0;
-  //this.enemy = 1;
   this.function = moveMethod;
   this.hopCount = 0;
   this.timeWaited = 0;
@@ -29,7 +28,7 @@ function Enemy(x, y, width, height, moveMethod){
       if(player.getX() < this.x){
         this.dx = -1;
       }
-      else if(player.getX() == this.x){
+      else if(this.x <= player.getX() + 1 && this.x >= player.getX() - 1){
         this.dx = 0;
       }
       else{

@@ -10,8 +10,10 @@ function Player(x, y, width, height){
      a platform (which includes the ground), then the player moves up for x frames while jump is held down, and eventually slows and falls until
      he hits the next platform below him!
    */
-  jumpLock = 1;
-  jumpFrames = 0;
+  var jumpLock = 1;
+  var jumpFrames = 0;
+  var jumpTime = 25;
+  var jumpSpeed = 4;
   this.scale = 1/4; // Scale factor for sprites
   GameObject.call(this, x, y, width*this.scale, height*this.scale);
   this.dx = 0;  // x velocity
@@ -79,23 +81,18 @@ function Player(x, y, width, height){
    */
   this.standOn = function(obj2){
     //console.log("Player Lowest: " + this.getLowestHitbox().getLowSide() + "\nPlatform Highest: " + obj2.getLowestHitbox().getHighSide() + "\nCollideHoriz.: " + this.getLowestHitbox().collidesHorizontally(obj2.getLowestHitbox()));
-    return (((this.getLowestHitbox().getLowSide() <= obj2.getLowestHitbox().getHighSide()) && (this.getLowestHitbox().getLowSide() >= obj2.getLowestHitbox().getHighSide() - 3)) && (this.getLowestHitbox().collidesHorizontally(obj2.getLowestHitbox())));
+    return (((this.getLowestHitbox().getLowSide() <= obj2.getLowestHitbox().getHighSide()) && (this.getLowestHitbox().getLowSide() >= obj2.getLowestHitbox().getHighSide() - jumpSpeed)) && (this.getLowestHitbox().collidesHorizontally(obj2.getLowestHitbox())));
   };
 
   this.standOnPlatforms = function(plats){
     var cnt = 0;
-    var onOne = false;
+    var onOne = 0;
     while(cnt < plats.length){
-      //console.log(platforms[cnt]);
-    // WHY. Why does it not recognize the second item??
-    //for(plat in platforms){
-      //console.log("plats: " + plat);
       if(this.standOn(plats[cnt])){
         if(hitboxView == 1){
-          console.log("cnt: " + cnt + "\nnew count: " + plats.length);
           plats[cnt].setColor("green");
         }
-        onOne = true;
+        onOne = plats[cnt];
 
       }
       else{
@@ -194,21 +191,29 @@ function Player(x, y, width, height){
     // NEW IMPLEMENTATION
     else if(upPressed){ // The player is trying to jump
       // If the player is touching a platform (begin jump)
-      if(this.standOnPlatforms(platforms)){
-        jumpSpeed = 3;
+      if(this.standOnPlatforms(platforms) != 0){
         jumpFrames = 1; // Increment this counter so it starts counting our ascent
         jumpLock = 0;
         this.dy = -jumpSpeed;
       }
       else if(jumpLock == 0){
         // If it is still being held down after the initial jump
+        for(tempCount = 0; tempCount < platforms.length; tempCount++){
+          // This had to be done by grabbing specific hitboxes from each item because adding another two loops
+          // to check all hitboxes in each object caused the game to no reach the end of the rendering cycle
+          if(this.getHighestHitbox().collides(platforms[tempCount].getHighestHitbox())){
+            jumpLock = 1;
+            jumpFrames = -1; // will be incremented to 0 in the following conditionals
+            break;
+          }
+        }
         // still move up normal speed
-        if(jumpFrames < 15){
+        if(jumpFrames < ((jumpTime* 1) / 2)){
           this.dy = -jumpSpeed;
           jumpFrames++;
         }
         // Still move up half speed
-        else if(jumpFrames < 25){
+        else if(jumpFrames < jumpTime){
           this.dy = -jumpSpeed/2;
           jumpFrames++;
         }
@@ -223,61 +228,15 @@ function Player(x, y, width, height){
 
     // Descend frames
     if(jumpLock == 1){
-      if(!this.standOnPlatforms(platforms)){
-        this.dy = 3;
-      }
-      else{
-        this.dy = 0;
-      }
-    }
-
-    /* OLD IMPLEMENTATION
-    if(upPressed){ // They want to jump, increment jumpCount to begin the jumping loop
-      jumpFrames = 30;
-      jumpSpeed = 3;
-      heldJump = false;
-      if(this.jumpCount == 0){
-        extraFramesHeld = 0;
-        this.jumpCount = 1;
-      }
-    }
-
-    if(this.jumpCount > 0){
-      if(this.jumpCount >= jumpFrames){ // If we've reached the end of the jump, exit the loop by resetting the jumpCount to 0
-        this.jumpCount = 0;
-        this.dy = 0;
-      }
-      else if(this.jumpCount <= jumpFrames/2){ // If we're on the way up the jump
-        if(this.jumpCount < jumpFrames/2){
-          this.dy = -jumpSpeed;
-          this.jumpCount++;
-        }
-        else if(this.jumpCount == jumpFrames/2 && upPressed && extraFramesHeld <= jumpFrames/3){
-          //heldJump = true;
-          this.dy = -jumpSpeed/2;
-          //this.jumpCount++;
-          extraFramesHeld++;
-        }
-        else{
-          //this.jumpCount = jumpFrames/2 + (jumpFrames/4) - 1;
-          this.dy = -jumpSpeed/2;
-          this.jumpCount++;
-        }
-      }
-      else{
-        // Second half of the jump; start descending
+      if(this.standOnPlatforms(platforms) == 0){
         this.dy = jumpSpeed;
-        if(extraFramesHeld >= 0){
-          this.dy = jumpSpeed/2;
-          extraFramesHeld--;
-        }
-        else{
-          this.jumpCount++;
-        }
-
+      }
+      else{
+        var platty = this.standOnPlatforms(platforms);
+        this.y = platty.getY() - this.height; // This ensures the player lands ON the platform and not a few pixels above it
+        this.dy = 0;
       }
     }
-    */
 
     // UPDATE X AND Y COORDS ON CANVAS
     this.x = this.x + 2*this.dx;

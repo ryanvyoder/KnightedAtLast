@@ -15,6 +15,9 @@
     <script>
     /*
       NOTES:
+      - Alter creation of objects so that in initialization they automatically add themselves to the array of active objects along
+        with any other arrays they may need to belong to (enemies, platforms, etc.)
+
       - levels: object? they are initiated, given bool true/false if active?
           - each level creates GameObjects that align to the objects within their layout. perhaps have a global
             GameObject array that is added to/removed from by the levels individually. That way when a new level is active,
@@ -30,7 +33,7 @@
       var activeObjects = [];
       var enemies = [];
       var platforms = [];
-      var hitboxView = 1;
+      var hitboxView = 0;
       var identity = 0;
       var groundLevel = canvas.height-250;
       //var playerOnAPlatform = false;
@@ -50,7 +53,7 @@
 
       var knight = new Player(100, groundLevel - 100, 220, 400);
       var ground = new Platform(0, groundLevel, canvas.width, canvas.height - groundLevel);
-      var platform1 = new Platform(300, groundLevel - 100, 100, 10);
+      var platform1 = new Platform(300, groundLevel - 120, 100, 10);
       var enemy1 = new Enemy(700, knight.getY() + (knight.getHeight() - 30), 30, 30, "hop");
       var enemy2 = new Enemy(700, knight.getY() + (knight.getHeight() - 50), 50, 50, "slide");
       activeObjects.push(knight);
@@ -64,12 +67,13 @@
       enemies.push(enemy2);
       var audio = new Audio('placeholder.wav');
       audio.loop = true;
-      audio.play();
+      //audio.play();
       var player = knight;
 
-      /*
-        keyDownHandler()
-        Called every update if a key has been pressed down
+      /**
+       * keyDownHandler(): Called every update if a key has been pressed down
+       * @param  {event} e Keypress event
+       * @return {nil}   no return
        */
       function keyDownHandler(e){
         if(e.keyCode == 37){ // Left arrow key
@@ -86,6 +90,14 @@
         }
         else if(e.keyCode == 32){ // Space Bar
           spacePressed = true;
+        }
+        else if(e.keyCode == 192){ // Tilde key (changes hitboxView)
+          if(hitboxView == 1){
+            hitboxView = 0;
+          }
+          else{
+            hitboxView = 1;
+          }
         }
       }
 
@@ -111,9 +123,10 @@
         }
       }
 
-      /*
-        draw()
-        Called every update. Clears the canvas and then redraws the next frame.
+
+      /**
+       * draw(): Called every update. Clears the canvas and then draws the next frame.
+       * @return {nil} no return
        */
       function draw(){
         // Drawing code
@@ -154,6 +167,7 @@
 
             // Create a new enemy at a random location
             // Math.random() returns a random value between 0 and 1
+            //for(yep = 0; yep < 2; yep++){ // testing limit for quantity of enemies
             randomLocation = Math.random();
             randomLocation = (randomLocation * (canvas.width - 0)) + 0;
             randomMovement = Math.random();
@@ -177,7 +191,7 @@
           activeObjects[index].draw();
         }
       }
-      
+
       setInterval(draw, 10); //function will be called every <second param> milliseconds
 
       /*
