@@ -44,6 +44,7 @@
     <script src="GameObject.js"></script>
     <script src="Player.js"></script>
     <script src="Platform.js"></script>
+    <script src="MovingPlatform.js"></script>
     <script src = "Enemy.js"></script>
 
     <script>
@@ -53,7 +54,7 @@
 
       var knight = new Player(100, groundLevel - 100, 220, 400);
       var ground = new Platform(0, groundLevel, canvas.width, canvas.height - groundLevel);
-      var platform1 = new Platform(300, groundLevel - 120, 100, 10);
+      var platform1 = new MovingPlatform(300, groundLevel - 120, 100, 10);
       var enemy1 = new Enemy(700, knight.getY() + (knight.getHeight() - 30), 30, 30, "hop");
       var enemy2 = new Enemy(700, knight.getY() + (knight.getHeight() - 50), 50, 50, "slide");
       activeObjects.push(knight);

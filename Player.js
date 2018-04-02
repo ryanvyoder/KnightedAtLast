@@ -201,10 +201,12 @@ function Player(x, y, width, height){
         for(tempCount = 0; tempCount < platforms.length; tempCount++){
           // This had to be done by grabbing specific hitboxes from each item because adding another two loops
           // to check all hitboxes in each object caused the game to no reach the end of the rendering cycle
-          if(this.getHighestHitbox().collides(platforms[tempCount].getHighestHitbox())){
-            jumpLock = 1;
-            jumpFrames = -1; // will be incremented to 0 in the following conditionals
-            break;
+          for(hitboxCt = 0; hitboxCt < this.getHitboxes().length; hitboxCt++){
+            if(this.getHitboxes()[hitboxCt].collides(platforms[tempCount].getHighestHitbox())){
+              jumpLock = 1;
+              jumpFrames = -1; // will be incremented to 0 in the following conditionals
+              break;
+            }
           }
         }
         // still move up normal speed
@@ -235,6 +237,9 @@ function Player(x, y, width, height){
         var platty = this.standOnPlatforms(platforms);
         this.y = platty.getY() - this.height; // This ensures the player lands ON the platform and not a few pixels above it
         this.dy = 0;
+        if(platty.getDx() != 0){
+          this.x+=2*platty.getDx();
+        }
       }
     }
 

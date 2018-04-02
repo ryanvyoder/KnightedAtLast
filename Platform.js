@@ -21,6 +21,10 @@ function Platform(x, y, width, height){
     this.useColor = this.defaultColor;
   };
 
+  this.getDx = function(){
+    return this.dx;
+  };
+
   this.update = function(){
     this.makeHitboxes();
   };
